@@ -5,12 +5,18 @@ from numpy import linalg as LA
 class Lasso(object):
     def __init__(self, X, y, lambda_val=1, eps=0.001, intercept=True, normalize=True):
         self.X = np.ones((X.shape[0], X.shape[1] + 1))
+        self.x_mean = np.zeros(X.shape[1] + 1)
+        self.x_std = np.ones(X.shape[1] + 1)
         if normalize:
-            self.X[:,1:] = np.copy((X - self.x_mean) / self.x_std)
+            self.x_mean[1:] = X.mean(axis=0)
+            self.x_std[1:] = X.std(axis=0)
+            self.X[:, 1:] = np.copy((X - self.x_mean[1:]) / self.x_std[1:])
         else:
-            self.X[:,1:] = np.copy(X)
+            self.X[:, 1:] = np.copy(X)
         if not intercept:
             self.X = self.X[:,1:]
+            self.x_mean = self.x_mean[1:]
+            self.x_std = self.x_std[1:]
         self.y = np.copy(y)
         self.n, self.m = self.X.shape
         self.theta = np.ones((self.m, 1))
@@ -52,11 +58,10 @@ class Lasso(object):
         return 1 / self.n * np.dot((self.X.dot(self.theta) - self.y).T, (self.X.dot(self.theta) - self.y))
 
 if __name__ == '__main__':
-     X = np.array([[3, 1, 2], [4, -3, -2.5], [10, 0, -4], [-5, 1.2, 3]])
+     X = np.array([[3, 1, 2, 9101], [4, -3, -2.5, 8102], [10, 0, -4, 7103], [-5, 1.2, 3, 5104]])
      y = np.array([10.3, -9.21, -1.9, 6.48]).reshape(-1, 1)
-     obj1 = Lasso(X, y, lambda_val=0, eps=0.0001, normalize=False, intercept=False)
+     obj1 = Lasso(X, y, lambda_val=1, eps=0.0001, normalize=True, intercept=False)
      obj1.gradien_descent(arg_condition=True,
-                         grad_condition=True, cost_func_condition=True)
+                         grad_condition=False, cost_func_condition=True)
      print(LA.inv(obj1.X.T @ obj1.X) @ obj1.X.T @ obj1.y)
      print(obj1.theta)
-     print(obj1.MSE())
