@@ -57,11 +57,14 @@ class Lasso(object):
     def MSE(self):
         return 1 / self.n * np.dot((self.X.dot(self.theta) - self.y).T, (self.X.dot(self.theta) - self.y))
 
+    def sort_weihts(self):
+        return sorted([(num, theta[0]) for num, theta in enumerate(self.theta)], key=lambda x: x[1])
+
 if __name__ == '__main__':
-     X = np.array([[3, 1, 2, 9101], [4, -3, -2.5, 8102], [10, 0, -4, 7103], [-5, 1.2, 3, 5104]])
+     X = np.array([[3, 1, 2], [4, -3, -2.5], [10, 0, -4], [-5, 1.2, 3]])
      y = np.array([10.3, -9.21, -1.9, 6.48]).reshape(-1, 1)
-     obj1 = Lasso(X, y, lambda_val=1, eps=0.0001, normalize=True, intercept=False)
+     obj1 = Lasso(X, y, lambda_val=0, eps=0.0001, normalize=True, intercept=True)
      obj1.gradien_descent(arg_condition=True,
                          grad_condition=False, cost_func_condition=True)
      print(LA.inv(obj1.X.T @ obj1.X) @ obj1.X.T @ obj1.y)
-     print(obj1.theta)
+     print(obj1.sort_weihts())
