@@ -58,7 +58,7 @@ class Lasso(object):
         return 1 / self.n * np.dot((self.X.dot(self.theta) - self.y).T, (self.X.dot(self.theta) - self.y))
 
     def sort_weihts(self):
-        return sorted([(num, theta[0]) for num, theta in enumerate(self.theta)], key=lambda x: x[1])
+        return sorted([(num, theta[0]) for num, theta in enumerate(self.theta)], key=lambda x: -x[1])
 
 if __name__ == '__main__':
      X = np.array([[3, 1, 2], [4, -3, -2.5], [10, 0, -4], [-5, 1.2, 3]])
